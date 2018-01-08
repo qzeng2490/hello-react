@@ -1,42 +1,8 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import { Table, Icon, Divider } from 'antd';
 import './App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import 'antd/dist/antd.css'
 
-class Employee extends React.Component{
-	render() {
-		return (
-			<tr>
-				<td>{this.props.employee.firstName}</td>
-				<td>{this.props.employee.lastName}</td>
-				<td>{this.props.employee.description}</td>
-			</tr>
-		)
-	}
-}
-
-class EmployeeList extends React.Component{
-	render() {
-		var employees = this.props.employees.map(employee =>
-			<Employee key={employee._links.self.href} employee={employee}/>
-		);
-		return (
-      <div className="container">
-        <table className="table table-striped">
-          <thead>
-            <tr>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>{employees}</tbody>
-        </table>
-      </div>
-			
-		)
-	}
-}
 
 class App extends Component {
   constructor(props) {
@@ -45,7 +11,6 @@ class App extends Component {
 	}
 
 	componentDidMount() {
-		
     var $that = this;
     fetch('http://localhost:8081/api/employees').then(function(response) {
       // $that.setState({employees: response.entity._embedded.employees});
@@ -53,12 +18,42 @@ class App extends Component {
     }).then(function(res){
       $that.setState({employees: res._embedded.employees});
       // console.log(res._embedded.employees);
+      // console.log($that.employees);
     })
 	}
 
 	render() {
+    const columns = [{
+      title: 'First Name',
+      dataIndex: 'firstName',
+      key: 'firstName',
+      render: text => <a href="#">{text}</a>,
+    }, {
+      title: 'Last Name',
+      dataIndex: 'lastName',
+      key: 'lastName',
+    }, {
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
+    }, {
+      title: 'Action',
+      key: 'action',
+      render: (text, record) => (
+        <span>
+          <a href="#">Add</a>
+          <Divider type="vertical" />
+          <a href="#">Delete</a>
+          <Divider type="vertical" />
+          <a href="#">Modify</a>
+        </span>
+      ),
+    }];
+    
+    console.log(this.state.employees);
+
 		return (
-			<EmployeeList employees={this.state.employees}/>
+			<Table columns={columns} dataSource={this.state.employees} rowKey="id"/>
 		)
 	}
 }
